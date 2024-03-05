@@ -1,5 +1,5 @@
 ---
-Title: FINA4350 Group 2 Blog Post 1
+Title: Setbacks from News Sentiment Analysis
 Date: 2024-03-04 16:59
 Category: Blog Post
 Tags: NLP
