@@ -27,6 +27,7 @@ except:
     allSearchResult = [searchResult.get_attribute("href") for searchResult in allSearchResult]
 
 articles = [] # set of new articles, each item is a string containing all text in an article
+articleDate = [] # set dates in each article
 for searchResult in allSearchResult:
     article = ""
     driver.get(searchResult)
@@ -36,6 +37,12 @@ for searchResult in allSearchResult:
     except NoSuchElementException:
         pass
     try:
+        # date of publish
+        date = driver.find_element(By.CSS_SELECTOR, "time")
+        date = date.text
+        date = date.split()[2:4] # date only, no time or "Published"
+        date = " ".join(date)
+        articleDate.append(date)
         # article main heading:
         heading = driver.find_element(By.CSS_SELECTOR, "h1.ArticleHeader-headline")
         article += heading.text + " "
@@ -56,4 +63,4 @@ for searchResult in allSearchResult:
 
 tokenizedCorpus = list(map(lambda doc: word_tokenize(doc), articles)) # tokenize each document
 processedCorpus = [list(filter(lambda word: word not in stopwords.words("english") and word.isalpha(), doc)) for doc in tokenizedCorpus]
-print(processedCorpus[0])
+print(articleDate[0])
