@@ -16,9 +16,11 @@ sleep(10) # wait for page to completely load
 try:
     driver.execute_script("document.getElementById('formatfilter').value = 'Articles'") # articles only
     driver.execute_script("var evnt = new Event('change'); document.getElementById('formatfilter').dispatchEvent(evnt)")
+    driver.execute_script("document.getElementById('sortdate').click();") # sort by date
 except:
     print(f"No search result for asset {targetAsset}")
     quit()
+sleep(5) # wait for filter to finish
 allSearchResult = driver.find_elements(By.CSS_SELECTOR, ".resultlink") # news articles are of class "resultlink"
 try:
     allSearchResult = [searchResult.get_attribute("href") for searchResult in allSearchResult] # extract url from search results
@@ -63,4 +65,6 @@ for searchResult in allSearchResult:
 
 tokenizedCorpus = list(map(lambda doc: word_tokenize(doc), articles)) # tokenize each document
 processedCorpus = [list(filter(lambda word: word not in stopwords.words("english") and word.isalpha(), doc)) for doc in tokenizedCorpus]
-print(articleDate[0])
+
+finalizedCorpus = list(zip(articleDate, processedCorpus))
+print(finalizedCorpus[0])
