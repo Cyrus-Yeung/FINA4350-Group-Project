@@ -50,7 +50,6 @@ for searchResult in allSearchResult:
             date = date.text
             date = date.split()[2:4] # date only
             date = " ".join(date)
-            articleDate.append(date)
             # article main heading
             heading = driver.find_element(By.CSS_SELECTOR, "h1.ArticleHeader-styles-select-headline--n2eyV")
             article += heading.text + " "
@@ -67,7 +66,6 @@ for searchResult in allSearchResult:
             date = date.text
             date = date.split()[2:4] # date only
             date = " ".join(date)
-            articleDate.append(date)
             # article main heading:
             heading = driver.find_element(By.CSS_SELECTOR, "h1.ArticleHeader-styles-makeit-headline--l_iUX")
             article += heading.text + " "
@@ -81,7 +79,6 @@ for searchResult in allSearchResult:
             date = date.text
             date = date.split()[2:4] # date only, no time or "Published"
             date = " ".join(date)
-            articleDate.append(date)
             # article main heading:
             heading = driver.find_element(By.CSS_SELECTOR, "h1.ArticleHeader-headline")
             article += heading.text + " "
@@ -95,7 +92,8 @@ for searchResult in allSearchResult:
                 if "<strong>WATCH:</strong>" in paragraphAndSubtitle.get_attribute("innerHTML"): # skip video redirection urls, e.g. WATCH: Tesla is going through a 'code red situation'
                     continue
                 article += paragraphAndSubtitle.text + " "
-        # add article to corpus
+        # add article and date to corpus
+        articleDate.append(date)
         articles.append(article)
     except:
         print(searchResult) # in case any error, output the link for debugging
