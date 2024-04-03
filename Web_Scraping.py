@@ -24,7 +24,7 @@ except:
     quit()
 sleep(1) # wait for filter to finish
 driver.find_element(By.CSS_SELECTOR, "html").send_keys(Keys.END) # scrolll to bottom to load more result
-sleep(10) # wait for result to load
+sleep(30) # wait for result to load
 allSearchResult = driver.find_elements(By.CSS_SELECTOR, "div.SearchResult-searchResultCard>a.resultlink") # news articles are of class "resultlink"
 try:
     allSearchResult = [searchResult.get_attribute("href") for searchResult in allSearchResult] # extract url from search results
@@ -107,9 +107,3 @@ finalizedCorpus = list(zip(articleDate, processedCorpus))
 # export corpus
 with open("newsArticlesCorpus.pickle", "wb") as export:
     dump(finalizedCorpus, export)
-
-export = open("newsArticlesCorpus.txt", "w")
-for doc in finalizedCorpus:
-    export.write(str(doc).encode("utf-8").replace(u"\u0144","n").decode("utf-8"))
-    export.write("\n")
-export.close()
