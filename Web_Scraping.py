@@ -48,7 +48,7 @@ for searchResult in allSearchResult:
             # date of publish
             date = driver.find_element(By.CSS_SELECTOR, "time[data-testid='single-timestamp']")
             date = date.text
-            date = date.split()[2:4] # date only
+            date = date.split()[2:5] # date only
             date = " ".join(date)
             # article main heading
             heading = driver.find_element(By.CSS_SELECTOR, "h1.ArticleHeader-styles-select-headline--n2eyV")
@@ -64,7 +64,7 @@ for searchResult in allSearchResult:
             # date of publish
             date = driver.find_element(By.CSS_SELECTOR, "time")
             date = date.text
-            date = date.split()[2:4] # date only
+            date = date.split()[2:5] # date only
             date = " ".join(date)
             # article main heading:
             heading = driver.find_element(By.CSS_SELECTOR, "h1.ArticleHeader-styles-makeit-headline--l_iUX")
@@ -77,7 +77,7 @@ for searchResult in allSearchResult:
             # date of publish
             date = driver.find_element(By.CSS_SELECTOR, "time")
             date = date.text
-            date = date.split()[2:4] # date only, no time or "Published"
+            date = date.split()[2:5] # date only, no time or "Published"
             date = " ".join(date)
             # article main heading:
             heading = driver.find_element(By.CSS_SELECTOR, "h1.ArticleHeader-headline")
