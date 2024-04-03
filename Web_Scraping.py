@@ -6,6 +6,7 @@ from selenium.webdriver import Keys, ActionChains
 from time import sleep
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
+from pickle import dump
 
 targetAsset = "gold" # asset to be analysed
 targetAsset = targetAsset.lower()
@@ -102,4 +103,13 @@ for searchResult in allSearchResult:
 tokenizedCorpus = list(map(lambda doc: word_tokenize(doc), articles)) # tokenize each document
 processedCorpus = [list(filter(lambda word: word not in stopwords.words("english") and word.isalpha(), doc)) for doc in tokenizedCorpus] # stop word removal
 finalizedCorpus = list(zip(articleDate, processedCorpus))
-print(finalizedCorpus[0])
+
+# export corpus
+with open("newsArticlesCorpus.pickle", "wb") as export:
+    dump(finalizedCorpus, export)
+
+export = open("newsArticlesCorpus.txt", "w")
+for doc in finalizedCorpus:
+    export.write(str(doc).encode("utf-8").replace(u"\u0144","n").decode("utf-8"))
+    export.write("\n")
+export.close()
