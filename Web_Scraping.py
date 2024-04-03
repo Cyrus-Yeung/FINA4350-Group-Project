@@ -4,6 +4,8 @@ from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver import Keys, ActionChains
 from time import sleep
+from re import match
+from datetime import date
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from pickle import dump
@@ -46,10 +48,10 @@ for searchResult in allSearchResult:
         isMakeIt = driver.execute_script("return document.querySelector('.MakeItGlobalNav-styles-makeit-wrapper--E30W0')") # check if article is cnbc make it
         if searchResult.split("/")[3] == "select": # articles under select
             # date of publish
-            date = driver.find_element(By.CSS_SELECTOR, "time[data-testid='single-timestamp']")
-            date = date.text
-            date = date.split()[2:5] # date only
-            date = " ".join(date)
+            publishDate = driver.find_element(By.CSS_SELECTOR, "time[data-testid='single-timestamp']")
+            publishDate = publishDate.text
+            publishDate = publishDate.split()[2:5] # date only
+            publishDate = " ".join(publishDate)
             # article main heading
             heading = driver.find_element(By.CSS_SELECTOR, "h1.ArticleHeader-styles-select-headline--n2eyV")
             article += heading.text + " "
@@ -62,10 +64,10 @@ for searchResult in allSearchResult:
                 article += paragraphAndSubtitle.text + " "
         elif isMakeIt != None: # articles under make it
             # date of publish
-            date = driver.find_element(By.CSS_SELECTOR, "time")
-            date = date.text
-            date = date.split()[2:5] # date only
-            date = " ".join(date)
+            publishDate = driver.find_element(By.CSS_SELECTOR, "time")
+            publishDate = publishDate.text
+            publishDate = publishDate.split()[2:5] # date only
+            publishDate = " ".join(publishDate)
             # article main heading:
             heading = driver.find_element(By.CSS_SELECTOR, "h1.ArticleHeader-styles-makeit-headline--l_iUX")
             article += heading.text + " "
@@ -75,10 +77,10 @@ for searchResult in allSearchResult:
                 article += paragraphAndSubtitle.text + " "
         else: # other articles
             # date of publish
-            date = driver.find_element(By.CSS_SELECTOR, "time")
-            date = date.text
-            date = date.split()[2:5] # date only, no time or "Published"
-            date = " ".join(date)
+            publishDate = driver.find_element(By.CSS_SELECTOR, "time")
+            publishDate = publishDate.text
+            publishDate = publishDate.split()[2:5] # date only, no time or "Published"
+            publishDate = " ".join(publishDate)
             # article main heading:
             heading = driver.find_element(By.CSS_SELECTOR, "h1.ArticleHeader-headline")
             article += heading.text + " "
@@ -93,7 +95,12 @@ for searchResult in allSearchResult:
                     continue
                 article += paragraphAndSubtitle.text + " "
         # add article and date to corpus
-        articleDate.append(date)
+        dateMatch = match("[a-zA-Z]{3} [0-9]{1,2} [0-9]{4}", publishDate) # extract "MMM DD YYYY" only
+        if dateMatch == None: # in case of "Min ago" or "1 hour ago" etc, assumed to be today
+            publishDate = date.today().strftime("%b %d %Y")
+        else:
+            publishDate = publishDate[dateMatch.start():dateMatch.end()]
+        articleDate.append(publishDate.lower())
         articles.append(article)
     except:
         print(searchResult) # in case any error, output the link for debugging
