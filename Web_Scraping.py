@@ -23,7 +23,7 @@ except:
     quit()
 sleep(1) # wait for filter to finish
 driver.find_element(By.CSS_SELECTOR, "html").send_keys(Keys.END) # scrolll to bottom to load more result
-sleep(5) # wait for result to load
+sleep(10) # wait for result to load
 allSearchResult = driver.find_elements(By.CSS_SELECTOR, "div.SearchResult-searchResultCard>a.resultlink") # news articles are of class "resultlink"
 try:
     allSearchResult = [searchResult.get_attribute("href") for searchResult in allSearchResult] # extract url from search results
