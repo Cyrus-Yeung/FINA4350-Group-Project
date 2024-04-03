@@ -22,7 +22,7 @@ except:
     print(f"No search result for asset {targetAsset}")
     quit()
 sleep(1) # wait for filter to finish
-ActionChains(driver).key_down(Keys.END) # scrolll to bottom
+driver.find_element(By.CSS_SELECTOR, "html").send_keys(Keys.END) # scrolll to bottom to load more result
 sleep(5) # wait for result to load
 allSearchResult = driver.find_elements(By.CSS_SELECTOR, "div.SearchResult-searchResultCard>a.resultlink") # news articles are of class "resultlink"
 try:
