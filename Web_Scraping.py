@@ -42,31 +42,64 @@ for searchResult in allSearchResult:
     except NoSuchElementException:
         pass
     try:
-        # date of publish
-        date = driver.find_element(By.CSS_SELECTOR, "time")
-        date = date.text
-        date = date.split()[2:4] # date only, no time or "Published"
-        date = " ".join(date)
-        articleDate.append(date)
-        # article main heading:
-        heading = driver.find_element(By.CSS_SELECTOR, "h1.ArticleHeader-headline")
-        article += heading.text + " "
-        # article key points
-        allKeyPoints = driver.find_elements(By.CSS_SELECTOR, "div.RenderKeyPoints-wrapper li")
-        for keyPoint in allKeyPoints:
-            article += keyPoint.text + " "
-        # paragraphs and subtitles
-        allParagraphsAndSubtitles = driver.find_elements(By.CSS_SELECTOR, "div.group p, h2.ArticleBody-subtitle")
-        for paragraphAndSubtitle in allParagraphsAndSubtitles:
-            if "<strong>WATCH:</strong>" in paragraphAndSubtitle.get_attribute("innerHTML"): # skip video redirection urls, e.g. WATCH: Tesla is going through a 'code red situation'
-                continue
-            article += paragraphAndSubtitle.text + " "
+        isMakeIt = driver.execute_script("return document.querySelector('.MakeItGlobalNav-styles-makeit-wrapper--E30W0')") # check if article is cnbc make it
+        if searchResult.split("/")[3] == "select": # articles under select
+            # date of publish
+            date = driver.find_element(By.CSS_SELECTOR, "time[data-testid='single-timestamp']")
+            date = date.text
+            date = date.split()[2:4] # date only
+            date = " ".join(date)
+            articleDate.append(date)
+            # article main heading
+            heading = driver.find_element(By.CSS_SELECTOR, "h1.ArticleHeader-styles-select-headline--n2eyV")
+            article += heading.text + " "
+            # article summary
+            summary = driver.find_element(By.CSS_SELECTOR, "h2.ArticleHeader-styles-select-deck--JP1pD")
+            article += summary.text + " "
+            # paragraphs and subtitles
+            allParagraphsAndSubtitles = driver.find_elements(By.CSS_SELECTOR, "div.group p, h2.ArticleBody-styles-select-subtitle--Ge5RH")
+            for paragraphAndSubtitle in allParagraphsAndSubtitles:
+                article += paragraphAndSubtitle.text + " "
+        elif isMakeIt != None: # articles under make it
+            # date of publish
+            date = driver.find_element(By.CSS_SELECTOR, "time")
+            date = date.text
+            date = date.split()[2:4] # date only
+            date = " ".join(date)
+            articleDate.append(date)
+            # article main heading:
+            heading = driver.find_element(By.CSS_SELECTOR, "h1.ArticleHeader-styles-makeit-headline--l_iUX")
+            article += heading.text + " "
+            # paragraphs and subtitles
+            allParagraphsAndSubtitles = driver.find_elements(By.CSS_SELECTOR, "div.group p, h2.ArticleBody-styles-makeit-subtitle--JP3GH")
+            for paragraphAndSubtitle in allParagraphsAndSubtitles:
+                article += paragraphAndSubtitle.text + " "
+        else: # other articles
+            # date of publish
+            date = driver.find_element(By.CSS_SELECTOR, "time")
+            date = date.text
+            date = date.split()[2:4] # date only, no time or "Published"
+            date = " ".join(date)
+            articleDate.append(date)
+            # article main heading:
+            heading = driver.find_element(By.CSS_SELECTOR, "h1.ArticleHeader-headline")
+            article += heading.text + " "
+            # article key points
+            allKeyPoints = driver.find_elements(By.CSS_SELECTOR, "div.RenderKeyPoints-wrapper li")
+            for keyPoint in allKeyPoints:
+                article += keyPoint.text + " "
+            # paragraphs and subtitles
+            allParagraphsAndSubtitles = driver.find_elements(By.CSS_SELECTOR, "div.group p, h2.ArticleBody-subtitle")
+            for paragraphAndSubtitle in allParagraphsAndSubtitles:
+                if "<strong>WATCH:</strong>" in paragraphAndSubtitle.get_attribute("innerHTML"): # skip video redirection urls, e.g. WATCH: Tesla is going through a 'code red situation'
+                    continue
+                article += paragraphAndSubtitle.text + " "
         # add article to corpus
         articles.append(article)
     except:
         print(searchResult) # in case any error, output the link for debugging
 
 tokenizedCorpus = list(map(lambda doc: word_tokenize(doc), articles)) # tokenize each document
-processedCorpus = [list(filter(lambda word: word not in stopwords.words("english") and word.isalpha(), doc)) for doc in tokenizedCorpus]
+processedCorpus = [list(filter(lambda word: word not in stopwords.words("english") and word.isalpha(), doc)) for doc in tokenizedCorpus] # stop word removal
 finalizedCorpus = list(zip(articleDate, processedCorpus))
 print(finalizedCorpus[0])
