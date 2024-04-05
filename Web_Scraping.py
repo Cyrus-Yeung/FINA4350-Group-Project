@@ -47,7 +47,7 @@ for searchResult in allSearchResult:
         pass
     try:
         driver.find_element(By.CSS_SELECTOR, "InvestingClubPill-investingClubPillLink") # skip club articles
-        contiune
+        continue
     except NoSuchElementException:
         pass
     try:
