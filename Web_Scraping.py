@@ -34,14 +34,20 @@ except:
     allSearchResult = driver.find_elements(By.CSS_SELECTOR, "div.SearchResult-searchResultCard>a.resultlink")
     allSearchResult = [searchResult.get_attribute("href") for searchResult in allSearchResult]
 
+articleDate = [] # set of dates in each article
 articles = [] # set of new articles, each item is a string containing all text in an article
-articleDate = [] # set dates in each article
+articleHeading = [] # set of headings
 for searchResult in allSearchResult:
     article = ""
     driver.get(searchResult)
     try:
         driver.find_element(By.CSS_SELECTOR, "a.ProPill-proPillLink") # skip pro articles
         continue
+    except NoSuchElementException:
+        pass
+    try:
+        driver.find_element(By.CSS_SELECTOR, "InvestingClubPill-investingClubPillLink") # skip club articles
+        contiune
     except NoSuchElementException:
         pass
     try:
@@ -54,7 +60,7 @@ for searchResult in allSearchResult:
             publishDate = " ".join(publishDate)
             # article main heading
             heading = driver.find_element(By.CSS_SELECTOR, "h1.ArticleHeader-styles-select-headline--n2eyV")
-            article += heading.text + " "
+            heading = heading.text
             # article summary
             summary = driver.find_element(By.CSS_SELECTOR, "h2.ArticleHeader-styles-select-deck--JP1pD")
             article += summary.text + " "
@@ -70,7 +76,7 @@ for searchResult in allSearchResult:
             publishDate = " ".join(publishDate)
             # article main heading:
             heading = driver.find_element(By.CSS_SELECTOR, "h1.ArticleHeader-styles-makeit-headline--l_iUX")
-            article += heading.text + " "
+            heading = heading.text
             # paragraphs and subtitles
             allParagraphsAndSubtitles = driver.find_elements(By.CSS_SELECTOR, "div.group p, h2.ArticleBody-styles-makeit-subtitle--JP3GH")
             for paragraphAndSubtitle in allParagraphsAndSubtitles:
@@ -83,7 +89,7 @@ for searchResult in allSearchResult:
             publishDate = " ".join(publishDate)
             # article main heading:
             heading = driver.find_element(By.CSS_SELECTOR, "h1.ArticleHeader-headline")
-            article += heading.text + " "
+            heading = heading.text
             # article key points
             allKeyPoints = driver.find_elements(By.CSS_SELECTOR, "div.RenderKeyPoints-wrapper li")
             for keyPoint in allKeyPoints:
@@ -101,13 +107,14 @@ for searchResult in allSearchResult:
         else:
             publishDate = publishDate[dateMatch.start():dateMatch.end()]
         articleDate.append(publishDate.lower())
+        articleHeading.append(heading)
         articles.append(article)
     except:
         print(searchResult) # in case any error, output the link for debugging
 
 tokenizedCorpus = list(map(lambda doc: word_tokenize(doc), articles)) # tokenize each document
 processedCorpus = [list(filter(lambda word: word not in stopwords.words("english") and word.isalpha(), doc)) for doc in tokenizedCorpus] # stop word removal
-finalizedCorpus = list(zip(articleDate, processedCorpus))
+finalizedCorpus = list(zip(articleDate, articleHeading, processedCorpus))
 
 # export corpus
 with open("newsArticlesCorpus.pickle", "wb") as export:
