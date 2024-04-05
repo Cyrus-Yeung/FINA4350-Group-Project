@@ -40,6 +40,7 @@ articleHeading = [] # set of headings
 for searchResult in allSearchResult:
     article = ""
     driver.get(searchResult)
+    sleep(1) # wait for article to load
     try:
         driver.find_element(By.CSS_SELECTOR, "a.ProPill-proPillLink") # skip pro articles
         continue
@@ -100,6 +101,8 @@ for searchResult in allSearchResult:
                 if "<strong>WATCH:</strong>" in paragraphAndSubtitle.get_attribute("innerHTML"): # skip video redirection urls, e.g. WATCH: Tesla is going through a 'code red situation'
                     continue
                 article += paragraphAndSubtitle.text + " "
+        if article == "": # skip articles that cannot be scraped for some reason, e.g. require subscription
+            continue
         # add article and date to corpus
         dateMatch = match("[a-zA-Z]{3} [0-9]{1,2} [0-9]{4}", publishDate) # extract "MMM DD YYYY" only
         if dateMatch == None: # in case of "Min ago" or "1 hour ago" etc, assumed to be today
