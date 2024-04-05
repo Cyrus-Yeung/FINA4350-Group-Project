@@ -46,7 +46,7 @@ for searchResult in allSearchResult:
     except NoSuchElementException:
         pass
     try:
-        driver.find_element(By.CSS_SELECTOR, "InvestingClubPill-investingClubPillLink") # skip club articles
+        driver.find_element(By.CSS_SELECTOR, "a.InvestingClubPill-investingClubPillLink") # skip club articles
         continue
     except NoSuchElementException:
         pass
