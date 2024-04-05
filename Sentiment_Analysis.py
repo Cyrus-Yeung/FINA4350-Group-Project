@@ -5,7 +5,7 @@ with open("newsArticlesCorpus.pickle", "rb") as corpusData:
     corpusData = load(corpusData)
 
 for i in range(len(corpusData)):
-    articleSentiment = TextBlob(" ".join(corpusData[i][2]))
+    articleSentiment = TextBlob(corpusData[i][1] + " " + " ".join(corpusData[i][2]))
     if articleSentiment.polarity > 0:
         label = "bullish"
     else:
