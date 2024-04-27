@@ -1,5 +1,6 @@
 from pickle import load
 from textblob import TextBlob
+from csv import writer
 
 with open("newsArticlesCorpus.pickle", "rb") as corpusData:
     corpusData = load(corpusData)
@@ -12,5 +13,8 @@ for i in range(len(corpusData)):
         label = "bearish"
     corpusData[i] = corpusData[i] + (articleSentiment.polarity, label)
 
-for i in corpusData:
-    print(i[0], i[1], i[2][1:10], i[3], i[4])
+with open("Sentiment_Labels.csv", "w", newline = "") as csvOutputFile:
+    csvwriter = writer(csvOutputFile)
+    csvwriter.writerow(["Date_of_Publication", "Main_Heading", "Sentiment_Score", "Lable"]) # column headers
+    for article in corpusData:
+        csvwriter.writerow(article[:2] + article[3:]) # do not output main body to save memory
