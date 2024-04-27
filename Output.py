@@ -5,8 +5,9 @@ from selenium.webdriver.common.by import By
 from time import sleep
 from math import log
 from numpy import mean, std
+from matplotlib.pyplot import plot, legend, show
 
-def standarize(data):
+def standardize(data):
     """
     standardize the 2nd column of a dataset
     formula: (data - mean) / standard_deviation
@@ -20,6 +21,16 @@ def standarize(data):
     for i in range(len(data)):
         data[i][1] = (data[i][1] - dataMean) / dataStd
     return data
+
+def average(data, key):
+    """
+    Calculate the average value of items with a specific key
+    """
+    valueList = []
+    for i in data:
+        if i[0] == key:
+            valueList.append(i[1])
+    return mean(valueList)
 
 # read Sentiment_Labels.csv
 class sentimentScore:
@@ -38,6 +49,13 @@ class sentimentScore:
                 yield [row[0], row[2]] # return date of publication and polarity score
 sentimentData = sentimentScore("Sentiment_Labels.csv")
 sentimentData = standardize(sentimentData)
+temp = []
+seen = [] # date already seen
+for i in sentimentData:
+    if i[0] not in seen: # date not yet looped
+        temp.append([i[0], average(sentimentData, i[0])])
+        seen.append(i[0])
+sentimentData = temp
 
 # Obtain the gold price from Yahoo Finance
 driver = webdriver.Chrome()
@@ -56,10 +74,26 @@ for element in goldData:
         goldPrice[-1].append(float(adjClosePrice))
     index += 1
 
-for i in range(len(goldPrice)-2,-1,-1): # loop in descending order
-    goldPrice[i][1] = log(goldPrice[i]/goldPrice[i-1]) # convert price to log return
-goldPrice.pop(0) # remove first day, as starting date has no log return
+for i in range(len(goldPrice)-1): # loop in descending order
+    goldPrice[i][1] = log(goldPrice[i][1]/goldPrice[i+1][1]) # convert price to log return
+goldPrice.pop(-1) # remove first day, as starting date has no log return
 goldPrice = standardize(goldPrice)
 
-print(sentimentData[:5])
-print(goldPrice[:5])
+# Separate date and data for ploting
+sentimentDate = [] # dates in the sentimentData
+sentimentValue = [] # standardized sentiment scores
+for i in sentimentData:
+    sentimentDate.append(i[0])
+    sentimentValue.append(i[1])
+
+returnDate = [] # dates in the log return data
+returnValue = [] # log returns
+for i in goldPrice:
+    returnDate.append(i[0])
+    returnValue.append(i[1])
+
+# Plot graph
+plot(sentimentDate, sentimentValue, label = "standardized sentiment score")
+plot(returnDate, returnValue, label = "standardized log return")
+legend()
+show()
