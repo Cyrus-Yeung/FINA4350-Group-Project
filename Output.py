@@ -1,11 +1,11 @@
-from csv import reader
+from csv import reader, writer
 from datetime import datetime
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from time import sleep
 from math import log
 from numpy import mean, std
-from matplotlib.pyplot import plot, legend, show
+from matplotlib.pyplot import plot, legend, gcf, savefig
 
 def standardize(data):
     """
@@ -90,8 +90,16 @@ for i in range(len(goldPrice)-1): # loop in descending order
 goldPrice.pop(-1) # remove first day, as starting date has no log return
 goldPrice = standardize(goldPrice)
 
+# Join and sort data
 fullData = innerJoin(sentimentData, goldPrice)
 fullData.sort(key = lambda x: x[0]) # sort by date, oldest to newest
+
+# Export data
+exportData = list(map(lambda x: [datetime.strftime(x[0], "%b %d %Y"), x[1], x[2]], fullData)) # convert date to string for export
+with open("Full_Data_with_Price.csv", "w", newline = "") as exportFile:
+    csvwriter = writer(exportFile)
+    csvwriter.writerow(["Date", "Sentiment_Score", "Log_Return"]) # header
+    csvwriter.writerows(exportData)
 
 # Separate date and data for ploting
 date = []
@@ -104,6 +112,7 @@ for i in fullData:
 
 # Plot graph
 plot(date, sentimentPlot, label = "standardized sentiment score")
-plot(date, goldPlot, label = "standardized log return")
+plot(date, goldPlot, label = "standardized log return", alpha = 0.75) # adjust opacity for better visualization
+gcf().set_size_inches(16, 8) # enlarge image
 legend()
-show()
+savefig("Plot.png", dpi = 100)
