@@ -96,7 +96,7 @@ fullData.sort(key = lambda x: x[0]) # sort by date, oldest to newest
 
 # Export data
 exportData = list(map(lambda x: [datetime.strftime(x[0], "%b %d %Y"), x[1], x[2]], fullData)) # convert date to string for export
-with open("Full_Data_with_Price.csv", "w", newline = "") as exportFile:
+with open("Final_Data_with_Price.csv", "w", newline = "") as exportFile:
     csvwriter = writer(exportFile)
     csvwriter.writerow(["Date", "Sentiment_Score", "Log_Return"]) # header
     csvwriter.writerows(exportData)
