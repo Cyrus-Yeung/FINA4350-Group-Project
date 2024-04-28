@@ -32,6 +32,17 @@ def average(data, key):
             valueList.append(i[1])
     return mean(valueList)
 
+def innerJoin(data1, data2):
+    """
+    Inner join data1 and data2, using first column as key
+    """
+    data2 = dict(data2)
+    result = []
+    for i in data1:
+        if i[0] in data2:
+            result.append([i[0], i[1], data2[i[0]]])
+    return result
+
 # read Sentiment_Labels.csv
 class sentimentScore:
     def __init__(self,  filename):
@@ -79,21 +90,20 @@ for i in range(len(goldPrice)-1): # loop in descending order
 goldPrice.pop(-1) # remove first day, as starting date has no log return
 goldPrice = standardize(goldPrice)
 
-# Separate date and data for ploting
-sentimentDate = [] # dates in the sentimentData
-sentimentValue = [] # standardized sentiment scores
-for i in sentimentData:
-    sentimentDate.append(i[0])
-    sentimentValue.append(i[1])
+fullData = innerJoin(sentimentData, goldPrice)
+fullData.sort(key = lambda x: x[0]) # sort by date, oldest to newest
 
-returnDate = [] # dates in the log return data
-returnValue = [] # log returns
-for i in goldPrice:
-    returnDate.append(i[0])
-    returnValue.append(i[1])
+# Separate date and data for ploting
+date = []
+sentimentPlot = []
+goldPlot = []
+for i in fullData:
+    date.append(i[0])
+    sentimentPlot.append(i[1])
+    goldPlot.append(i[2])
 
 # Plot graph
-plot(sentimentDate, sentimentValue, label = "standardized sentiment score")
-plot(returnDate, returnValue, label = "standardized log return")
+plot(date, sentimentPlot, label = "standardized sentiment score")
+plot(date, goldPlot, label = "standardized log return")
 legend()
 show()
