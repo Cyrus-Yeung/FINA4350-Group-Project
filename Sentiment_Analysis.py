@@ -15,6 +15,6 @@ for i in range(len(corpusData)):
 
 with open("Sentiment_Labels.csv", "w", newline = "") as csvOutputFile:
     csvwriter = writer(csvOutputFile)
-    csvwriter.writerow(["Date_of_Publication", "Main_Heading", "Sentiment_Score", "Lable"]) # column headers
+    csvwriter.writerow(["Date_of_Publication", "Main_Heading", "Sentiment_Score", "Label"]) # column headers
     for article in corpusData:
         csvwriter.writerow(article[:2] + article[3:]) # do not output main body to save memory
